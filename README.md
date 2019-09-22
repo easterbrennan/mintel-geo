@@ -17,7 +17,7 @@ Below the dataframe output the raw dictionary data is output for easy use elsewh
 - Weather information is gathered using the DarkSky api
 
 ---
-During testing both DarkSky and ipstacks proved free is not always enough, the free of which I exhausted during my tests.  I have subscribed to both at minimal cost to ensure the application continues to work as intended.
+During testing both DarkSky and ipstacks proved free is not always enough, the free daily/monthly allowances of which I exhausted during my tests.  I have subscribed to both at minimal cost to ensure the application continues to work as intended.
 
 
  
