@@ -50,12 +50,10 @@ def obtain_geolocation(ips):
     ipstack_api_key = 'b5f01d148610e9ccfeb179dd2e69665c'  # ipstack API key
     for ip in ips:
         try:
-            print(ip)
             included_fields = '&fields=latitude,longitude,city,region_name,country_name'  # include only required geo fields from api response
             ip_url = 'http://api.ipstack.com/' + ip + '?access_key=' + ipstack_api_key + included_fields  # build api call url
             jsn_ip = requests.get(ip_url)  # send request to api
             ip_result = jsn_ip.json()
-            print(ip_result)
             geo_lat = str(ip_result['latitude'])  # Set the Latitude
             geo_lon = str(ip_result['longitude'])  # Set the Longitude
             geo_city = str(ip_result['city'])  # Set the city
