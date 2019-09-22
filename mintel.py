@@ -88,18 +88,11 @@ def get_weather_data(geo_data):
             coord_weather_request = requests.get(url=request_url)  # perform api call
             coord_weather_data = coord_weather_request.json()  # extracting weather data in json
             coord_weather_data = coord_weather_data['currently']  # reset var to only include current weather details
-            instance_weather_dict = {k: {'Temperature (f)': coord_weather_data['temperature'], 'Precipitation (%)': coord_weather_data['precipProbability'], 'Wind speed (mps)': coord_weather_data['windSpeed'], 'Humidity (%)': coord_weather_data['humidity']}}
+            instance_weather_dict = {k: {'Temperature (f)': coord_weather_data['temperature'], 'PrecipProb (%)': coord_weather_data['precipProbability'] * 100, 'Wind speed (mps)': coord_weather_data['windSpeed'], 'Humidity (%)': coord_weather_data['humidity']}}
             weather_main_dict.update(instance_weather_dict)  # build main weather dictionary
         except requests.exceptions.RequestException as e:
             print(e)
     return weather_main_dict
-
-
-# function to export data as json files
-# inputs: filename and dictionary name
-def json_exporter(filename, data_dict):
-    with open('/mintel-geo/json_output/' + filename, 'w') as fp:
-        json.dump(data_dict, fp)
 
 
 # function to display data as dataframes to screen
@@ -127,11 +120,6 @@ if __name__ == "__main__":
     region_weather = get_weather_data(geo_list[0][1])
     country_weather = get_weather_data(geo_list[0][2])
 
-    # Export data to local json files for external use
-    json_exporter('city_weather.json', city_weather)
-    json_exporter('region_weather.json', region_weather)
-    json_exporter('country_weather.json', country_weather)
-
     # Output data to screen in panda dataframes
     print('-------------------------------------------')
     print('Weather by City: ')
@@ -143,4 +131,14 @@ if __name__ == "__main__":
     print('Weather by Country: ')
     dataframe_generator(country_weather, 50)
     print('-------------------------------------------')
+    print('')
+    # Output data to screen in dictionary form
+    print('City data dictionary:')
+    print(city_weather)
+    print('Region data dictionary:')
+    print(region_weather)
+    print('Country data dictionary:')
+    print(country_weather)
+
+
 
