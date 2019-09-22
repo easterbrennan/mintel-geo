@@ -105,7 +105,7 @@ def dataframe_generator(data_dict, columns):
 
 if __name__ == "__main__":
 
-    user_list = obtain_ip(5)  # get list of users from wikipedia
+    user_list = obtain_ip(18)  # get list of users from wikipedia
     ip_list = parse_user_ips(user_list)  # parse user list to extract only valid ip addresses
     print('############################################')
     print('number of ip addresses being parsed: ' + (str(len(ip_list))))
