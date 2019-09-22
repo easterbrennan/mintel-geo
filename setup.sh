@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-set -env
-
-docker build -t mintel-geo-app . && docker run -it --rm --name mintel-geo-running mintel-geo-app --mount source=./,target=./mintel
+docker build -t mintel-geo-image . && docker run -it --rm -v json_output:/mintel-geo/json_output/ --name mintel-geo mintel-geo-image python mintel.py

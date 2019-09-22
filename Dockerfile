@@ -1,5 +1,6 @@
 FROM python:3
-COPY . .
-RUN pip install -r requirements.txt
-WORKDIR /mintel
-CMD [ "python", "./mintel.py" ]
+RUN apt-get upgrade && apt-get update && apt-get install -y python-pip
+COPY . ./mintel-geo
+RUN pip install -r ./mintel-geo/requirements.txt
+WORKDIR ./mintel-geo
+CMD [ "python", "./mintel-geo/mintel.py" ]

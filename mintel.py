@@ -3,6 +3,7 @@ import socket
 import pandas as pd
 import re
 import json
+import os
 
 
 # function to get a list of users from wikipedia
@@ -96,7 +97,7 @@ def get_weather_data(geo_data):
 # function to export data as json files
 # inputs: filename and dictionary name
 def json_exporter(filename, data_dict):
-    with open('./json_output/' + filename, 'w') as fp:
+    with open('/mintel-geo/json_output/' + filename, 'w') as fp:
         json.dump(data_dict, fp)
 
 
@@ -115,11 +116,12 @@ if __name__ == "__main__":
     print('############################################')
     print('number of ip addresses being parsed: ' + (str(len(ip_list))))
     print('############################################')
+    print('processing please wait...')
 
-    # TODO: possible optimisation (quite slow)
+    # TODO: possible optimisation required (slow)
     geo_list = [obtain_geolocation(ip_list)]
 
-    # TODO: possible optimisation (quite slow)
+    # TODO: possible optimisation required (slow)
     city_weather = get_weather_data(geo_list[0][0])
     region_weather = get_weather_data(geo_list[0][1])
     country_weather = get_weather_data(geo_list[0][2])
