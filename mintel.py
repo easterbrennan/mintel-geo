@@ -2,8 +2,7 @@ import requests
 import socket
 import pandas as pd
 import re
-import json
-import os
+from multiprocessing import Pool
 
 
 # function to get a list of users from wikipedia
@@ -48,29 +47,24 @@ def obtain_geolocation(ips):
     country_dict = {}
 
     ipstack_api_key = 'b5f01d148610e9ccfeb179dd2e69665c'  # ipstack API key
-    for ip in ips:
-        try:
-            included_fields = '&fields=latitude,longitude,city,region_name,country_name'  # include only required geo fields from api response
-            ip_url = 'http://api.ipstack.com/' + ip + '?access_key=' + ipstack_api_key + included_fields  # build api call url
-            jsn_ip = requests.get(ip_url)  # send request to api
-            ip_result = jsn_ip.json()
-            geo_lat = str(ip_result['latitude'])  # Set the Latitude
-            geo_lon = str(ip_result['longitude'])  # Set the Longitude
-            geo_city = str(ip_result['city'])  # Set the city
-            geo_region = str(ip_result['region_name'])  # Set the region name
-            geo_country = str(ip_result['country_name'])  # Set the country
+    try:
+        included_fields = '&fields=latitude,longitude,city,region_name,country_name'  # include only required geo fields from api response
+        ip_url = 'http://api.ipstack.com/{}?access_key={}{}'.format(ips, ipstack_api_key, included_fields)  # build api call url
+        jsn_ip = requests.get(ip_url)  # send request to api
+        ip_result = jsn_ip.json()
+        geo_lat = str(ip_result['latitude'])  # Set the Latitude
+        geo_lon = str(ip_result['longitude'])  # Set the Longitude
+        geo_city = str(ip_result['city'])  # Set the city
+        geo_region = str(ip_result['region_name'])  # Set the region name
+        geo_country = str(ip_result['country_name'])  # Set the country
 
-            if str(ip_result['latitude']) != 'None':  # check added as very rarely an ip address would return with fields set to None
-                # organise data into dicts by city, region and country
-                if geo_city not in city_dict:
-                    city_dict.update({geo_city: [geo_lat, geo_lon]})
-                if geo_region not in region_dict:
-                    region_dict.update({geo_region: [geo_lat, geo_lon]})
-                if geo_country not in country_dict:
-                    country_dict.update({geo_country: [geo_lat, geo_lon]})
+        # organise data into dicts by city, region and country
+        city_dict.update({geo_city: [geo_lat, geo_lon]})
+        region_dict.update({geo_region: [geo_lat, geo_lon]})
+        country_dict.update({geo_country: [geo_lat, geo_lon]})
 
-        except requests.exceptions.RequestException as e:
-            print(e)
+    except requests.exceptions.RequestException as e:
+        print(e)
     return city_dict, region_dict, country_dict
 
 
@@ -105,7 +99,7 @@ def dataframe_generator(data_dict, columns):
 
 if __name__ == "__main__":
 
-    user_list = obtain_ip(18)  # get list of users from wikipedia
+    user_list = obtain_ip(10)  # get list of users from wikipedia
     ip_list = parse_user_ips(user_list)  # parse user list to extract only valid ip addresses
     print('############################################')
     print('number of ip addresses being parsed: ' + (str(len(ip_list))))
@@ -113,12 +107,21 @@ if __name__ == "__main__":
     print('processing please wait...')
 
     # TODO: possible optimisation required (slow)
-    geo_list = [obtain_geolocation(ip_list)]
+    with Pool(50) as p:
+        geo_list = p.map(obtain_geolocation, ip_list)
+
+    city_geo = {}
+    region_geo = {}
+    country_geo = {}
+    for geo in geo_list:
+        city_geo.update(geo[0])
+        region_geo.update(geo[1])
+        country_geo.update(geo[2])
 
     # TODO: possible optimisation required (slow)
-    city_weather = get_weather_data(geo_list[0][0])
-    region_weather = get_weather_data(geo_list[0][1])
-    country_weather = get_weather_data(geo_list[0][2])
+    city_weather = get_weather_data(city_geo)
+    region_weather = get_weather_data(region_geo)
+    country_weather = get_weather_data(country_geo)
 
     # Output data to screen in panda dataframes
     print('-------------------------------------------')
