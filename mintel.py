@@ -49,7 +49,7 @@ def obtain_geolocation(ips):
     ipstack_api_key = 'b5f01d148610e9ccfeb179dd2e69665c'  # ipstack API key
     try:
         included_fields = '&fields=latitude,longitude,city,region_name,country_name'  # include only required geo fields from api response
-        ip_url = 'http://api.ipstack.com/{}?access_key={}{}'.format(ips, ipstack_api_key, included_fields)  # build api call url
+        ip_url = 'http://api.ipstack.com/{0}?access_key={1}{2}'.format(ips, ipstack_api_key, included_fields)  # build api call url
         jsn_ip = requests.get(ip_url)  # send request to api
         ip_result = jsn_ip.json()
         geo_lat = str(ip_result['latitude'])  # Set the Latitude
@@ -78,7 +78,7 @@ def get_weather_data(geo_data):
         try:
             excluded_blocks = '?exclude=minutely,hourly,daily,alerts,flags'  # exclude data blocks from api response
             included_units = '?units=temperature,precipProbability,windSpeed,humidity'  # include only required weather units from api response
-            request_url = 'https://api.darksky.net/forecast/' + api_key + '/' + geo_data[k][0] + ',' + geo_data[k][1] + excluded_blocks + included_units
+            request_url = 'https://api.darksky.net/forecast/{0}/{1},{2}{3}{4}'.format(api_key, geo_data[k][0], geo_data[k][1], excluded_blocks, included_units)
             coord_weather_request = requests.get(url=request_url)  # perform api call
             coord_weather_data = coord_weather_request.json()  # extracting weather data in json
             coord_weather_data = coord_weather_data['currently']  # reset var to only include current weather details
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     user_list = obtain_ip(10)  # get list of users from wikipedia
     ip_list = parse_user_ips(user_list)  # parse user list to extract only valid ip addresses
     print('############################################')
-    print('number of ip addresses being parsed: ' + (str(len(ip_list))))
+    print('number of ip addresses being parsed: {0}'.format((str(len(ip_list)))))
     print('############################################')
     print('processing please wait...')
 
